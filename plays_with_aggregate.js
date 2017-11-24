@@ -266,3 +266,27 @@ db.grades.aggregate(
         }
     ]
 )
+
+db.zips.aggregate(
+    [
+        {
+            $project: {
+                first_char: { $substr: ['$city', 0, 1] },
+                population: '$pop'
+            }
+        },
+        {
+            $match: {
+                first_char: {
+                    $in: ['B', 'D', 'O', 'G', 'N', 'M']
+                }
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                sum: { $sum: '$population' }
+            }
+        }
+    ]
+)
