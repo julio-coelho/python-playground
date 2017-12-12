@@ -290,3 +290,42 @@ db.zips.aggregate(
         }
     ]
 )
+
+db.messages.aggregate(
+    [
+        {
+            $unwind: '$headers.To'
+        },
+        {
+            $project: {
+                from: '$headers.From',
+                to: '$headers.To'
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    _id: '$_id',
+                    from: '$from',
+                    to: '$to',
+                },
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    from: '$_id.from',
+                    to: '$_id.to',
+                },
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $sort: {
+                count: -1
+            }
+        }
+    ],
+    { allowDiskUse: true }
+);
